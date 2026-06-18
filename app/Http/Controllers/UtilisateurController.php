@@ -33,6 +33,11 @@ class UtilisateurController extends Controller
             'utilisateurs' => $utilisateurs,
             'filtres' => $request->all(),
             'roles' => User::ROLES,
+            'stats' => [
+                'total' => User::count(),
+                'actifs' => User::where('actif', true)->count(),
+                'inactifs' => User::where('actif', false)->count(),
+            ],
         ]);
     }
 

@@ -34,6 +34,17 @@ class User extends Authenticatable
         'rh-filiale', 'manager', 'employe', 'auditeur-groupe',
     ];
 
+    /** Libellé lisible + couleur Tailwind par rôle (pour badges/UI). */
+    public const ROLES_META = [
+        'super-admin' => ['Super Admin', 'rose'],
+        'direction-generale' => ['Direction Générale', 'violet'],
+        'drh-groupe' => ['DRH Groupe', 'indigo'],
+        'rh-filiale' => ['RH Filiale', 'sky'],
+        'manager' => ['Manager', 'amber'],
+        'employe' => ['Employé', 'slate'],
+        'auditeur-groupe' => ['Auditeur Groupe', 'teal'],
+    ];
+
     /** Rôles ayant une visibilité sur l'ensemble du groupe. */
     public const ROLES_GROUPE = ['super-admin', 'direction-generale', 'drh-groupe', 'auditeur-groupe'];
 

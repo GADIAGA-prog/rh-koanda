@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" class="h-full bg-slate-50">
+<html lang="fr" class="h-full bg-mineral">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,15 +8,37 @@
 
     {{-- En production : @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Charte graphique Groupe Koanda (couleurs + typographie)
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        koanda: { DEFAULT: '#70B339', dark: '#5D9730', light: '#E9F4DF' },
+                        forest: { DEFAULT: '#07120B', soft: '#0F1F15' },
+                        mineral: '#F4F5F2',
+                        mist: '#DDE1DA',
+                        slatetext: '#46514A',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        display: ['Montserrat', 'Inter', 'ui-sans-serif', 'sans-serif'],
+                    },
+                },
+            },
+        };
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
     <style>
         :root { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
+        h1, h2, .font-display { font-family: 'Montserrat', 'Inter', sans-serif; }
         [x-cloak] { display: none; }
     </style>
 </head>
-<body class="h-full text-slate-700 antialiased">
+<body class="h-full text-slatetext antialiased">
 <div class="min-h-full lg:flex">
 
     {{-- ===================== SIDEBAR ===================== --}}
@@ -25,25 +47,25 @@
     {{-- ===================== CONTENU ===================== --}}
     <div class="flex-1 min-w-0">
         {{-- Barre supérieure --}}
-        <header class="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-slate-200 bg-white/90 px-6 py-3 backdrop-blur">
+        <header class="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-mist bg-white/90 px-6 py-3 backdrop-blur">
             <div>
-                <p class="text-xs font-medium uppercase tracking-wider text-slate-400">@yield('rubrique', 'Tableau de bord')</p>
-                <h1 class="text-lg font-semibold text-slate-900">@yield('titre', 'RH')</h1>
+                <p class="text-xs font-medium uppercase tracking-wider text-koanda-dark">@yield('rubrique', 'Tableau de bord')</p>
+                <h1 class="font-display text-lg font-bold text-forest">@yield('titre', 'RH')</h1>
             </div>
             <div class="flex items-center gap-3">
                 @auth
                     <div class="hidden text-right sm:block">
-                        <p class="text-sm font-medium text-slate-900">{{ auth()->user()->name }}</p>
+                        <p class="text-sm font-semibold text-forest">{{ auth()->user()->name }}</p>
                         <p class="text-xs text-slate-400">
                             {{ auth()->user()->peutVoirToutLeGroupe() ? 'Vue Groupe' : (auth()->user()->filiale?->nom ?? 'Filiale') }}
                         </p>
                     </div>
-                    <div class="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
+                    <div class="flex h-9 w-9 items-center justify-center rounded-full bg-koanda text-sm font-semibold text-white">
                         {{ strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}
                     </div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button class="rounded-lg px-2 py-1 text-sm text-slate-400 hover:text-slate-700" title="Déconnexion">Quitter</button>
+                        <button class="rounded-lg px-2 py-1 text-sm text-slate-400 transition hover:text-forest" title="Déconnexion">Quitter</button>
                     </form>
                 @endauth
             </div>
@@ -52,8 +74,8 @@
         {{-- Messages flash --}}
         <div class="px-6 pt-4">
             @if (session('succes'))
-                <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-                    {{ session('succes') }}
+                <div class="mb-4 flex items-center gap-2 rounded-lg border border-koanda/30 bg-koanda-light px-4 py-3 text-sm font-medium text-koanda-dark">
+                    <span class="text-base leading-none">✓</span> {{ session('succes') }}
                 </div>
             @endif
             @if ($errors->any())
