@@ -29,6 +29,23 @@
         <a href="{{ route('filiales.index') }}" class="flex items-center gap-3 rounded-lg px-3 py-2 {{ $lien('filiales.*') }}">
             <span class="text-base">⬢</span> Filiales
         </a>
+
+        @can('utilisateur.view')
+            <p class="px-3 pb-2 pt-4 text-xs uppercase tracking-wider text-slate-500">Administration</p>
+            <a href="{{ route('admin.utilisateurs.index') }}" class="flex items-center gap-3 rounded-lg px-3 py-2 {{ $lien('admin.utilisateurs.*') }}">
+                <span class="text-base">⚙</span> Utilisateurs
+            </a>
+            @can('role.manage')
+                <a href="{{ route('admin.roles.index') }}" class="flex items-center gap-3 rounded-lg px-3 py-2 {{ $lien('admin.roles.*') }}">
+                    <span class="text-base">⛨</span> Rôles &amp; permissions
+                </a>
+            @endcan
+        @endcan
+
+        <p class="px-3 pb-2 pt-4 text-xs uppercase tracking-wider text-slate-500">Compte</p>
+        <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 rounded-lg px-3 py-2 {{ $lien('profile.*') }}">
+            <span class="text-base">☺</span> Mon profil
+        </a>
     </nav>
 
     <div class="border-t border-white/10 px-6 py-4">

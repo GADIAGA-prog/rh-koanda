@@ -50,6 +50,16 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // Un compte désactivé (actif = false) ne doit jamais ouvrir de session.
+        if (! Auth::user()->actif) {
+            Auth::logout();
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'email' => 'Ce compte est désactivé. Contactez votre administrateur.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

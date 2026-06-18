@@ -12,7 +12,7 @@ class RolePermissionSeeder extends Seeder
     {
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $modules = ['employe', 'contrat', 'conge', 'presence', 'document', 'formation', 'performance', 'sanction', 'filiale'];
+        $modules = ['employe', 'contrat', 'conge', 'presence', 'document', 'formation', 'performance', 'sanction', 'filiale', 'utilisateur'];
         $actions = ['view', 'create', 'update', 'delete'];
 
         foreach ($modules as $module) {
@@ -21,7 +21,7 @@ class RolePermissionSeeder extends Seeder
             }
         }
         // Permissions spécifiques
-        foreach (['conge.valider', 'rapport.consulter', 'audit.consulter'] as $perm) {
+        foreach (['conge.valider', 'rapport.consulter', 'audit.consulter', 'role.manage'] as $perm) {
             Permission::firstOrCreate(['name' => $perm, 'guard_name' => 'web']);
         }
 

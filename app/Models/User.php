@@ -28,6 +28,12 @@ class User extends Authenticatable
         ];
     }
 
+    /** Tous les rôles applicatifs (ordre hiérarchique). */
+    public const ROLES = [
+        'super-admin', 'direction-generale', 'drh-groupe',
+        'rh-filiale', 'manager', 'employe', 'auditeur-groupe',
+    ];
+
     /** Rôles ayant une visibilité sur l'ensemble du groupe. */
     public const ROLES_GROUPE = ['super-admin', 'direction-generale', 'drh-groupe', 'auditeur-groupe'];
 
