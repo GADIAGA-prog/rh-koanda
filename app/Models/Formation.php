@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToFiliale;
+use App\Models\Enums\StatutFormation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -19,6 +20,7 @@ class Formation extends Model
         'date_debut' => 'date',
         'date_fin' => 'date',
         'cout' => 'decimal:2',
+        'statut' => StatutFormation::class,
     ];
 
     public function participants(): BelongsToMany

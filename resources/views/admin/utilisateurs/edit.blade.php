@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('titre', 'Modifier ' . $utilisateur->name)
-@section('rubrique', 'Administration')
+@section('rubrique', 'Administration · Utilisateurs')
 
 @section('contenu')
 @php
@@ -28,11 +28,9 @@
     </div>
 
     {{-- Coordonnées, rôle, filiales --}}
-    <form method="POST" action="{{ route('admin.utilisateurs.update', $utilisateur) }}" class="overflow-hidden rounded-xl border border-mist bg-white shadow-sm">
+    <form method="POST" action="{{ route('admin.utilisateurs.update', $utilisateur) }}" class="overflow-hidden rounded-2xl border border-mist bg-white shadow-sm">
         @csrf @method('PUT')
-        <div class="border-b border-mist px-6 py-4">
-            <h2 class="font-display text-base font-bold text-forest">Coordonnées &amp; accès</h2>
-        </div>
+        <x-form.banner title="Coordonnées &amp; accès" subtitle="Identité, rôle et périmètre de filiales" />
         <div class="p-6">
             @include('admin.utilisateurs._form')
         </div>

@@ -45,4 +45,35 @@ class Contrat extends Model
             ->whereNotNull('date_fin')
             ->whereDate('date_fin', '<=', $date);
     }
+
+    /** Contrats actifs à échéance entre aujourd'hui et N jours. */
+    public function scopeARenouveler($query, int $jours = 30)
+    {
+        return $query->expirantAvant(now()->addDays($jours))
+            ->whereDate('date_fin', '>=', today());
+    }
+
+    public function scopeRecherche($query, ?string $terme)
+    {
+        if (! $terme) return $query;
+        return $query->where(function ($q) use ($terme) {
+            $q->where('reference', 'like', "%{$terme}%")
+              ->orWhereHas('employe', fn ($e) => $e->recherche($terme));
+        });
+    }
+
+    /** Nombre de jours avant l'échéance (négatif si déjà dépassée). */
+    public function getJoursAvantEcheanceAttribute(): ?int
+    {
+        return $this->date_fin ? today()->diffInDays($this->date_fin, false) : null;
+    }
+
+    /** Le contrat est-il actif et proche de son échéance ? */
+    public function aRenouveler(int $jours = 30): bool
+    {
+        return $this->statut === StatutContrat::ACTIF
+            && $this->date_fin !== null
+            && $this->jours_avant_echeance >= 0
+            && $this->jours_avant_echeance <= $jours;
+    }
 }

@@ -29,19 +29,35 @@
     <div class="space-y-6 lg:col-span-2">
         {{-- Contrats --}}
         <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h3 class="text-sm font-semibold text-slate-900">Contrats</h3>
+            <div class="flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-slate-900">Contrats</h3>
+                @can('create', App\Models\Contrat::class)
+                    <a href="{{ route('contrats.create', ['employe_id' => $employe->id]) }}" class="text-xs font-medium text-koanda-dark hover:text-koanda">+ Ajouter</a>
+                @endcan
+            </div>
+
+            @php $aRenouveler = $employe->contrats->filter->aRenouveler(); @endphp
+            @if ($aRenouveler->isNotEmpty())
+                <div class="mt-3 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800">
+                    <span>⚠</span> {{ $aRenouveler->count() }} contrat(s) à renouveler prochainement.
+                </div>
+            @endif
+
             <div class="mt-3 divide-y divide-slate-50">
                 @forelse ($employe->contrats as $contrat)
-                    <div class="flex items-center justify-between py-3 text-sm">
+                    <a href="{{ route('contrats.show', $contrat) }}" class="flex items-center justify-between py-3 text-sm hover:bg-slate-50">
                         <div>
-                            <p class="font-medium text-slate-800">{{ $contrat->type_contrat->libelle() }}</p>
+                            <p class="font-medium text-slate-800">
+                                {{ $contrat->type_contrat->libelle() }}
+                                @if ($contrat->aRenouveler())<span class="ml-1 inline-flex rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">à renouveler</span>@endif
+                            </p>
                             <p class="text-xs text-slate-400">Du {{ $contrat->date_debut->format('d/m/Y') }}@if($contrat->date_fin) au {{ $contrat->date_fin->format('d/m/Y') }}@endif</p>
                         </div>
                         <div class="text-right">
                             <p class="font-semibold text-slate-900">{{ number_format($contrat->salaire_base, 0, ',', ' ') }} {{ $contrat->devise }}</p>
-                            <span class="text-xs text-{{ $contrat->statut->value === 'actif' ? 'emerald' : 'slate' }}-600">{{ $contrat->statut->libelle() }}</span>
+                            <span class="text-xs text-{{ $contrat->statut->couleur() }}-600">{{ $contrat->statut->libelle() }}</span>
                         </div>
-                    </div>
+                    </a>
                 @empty
                     <p class="py-3 text-sm text-slate-400">Aucun contrat enregistré.</p>
                 @endforelse
@@ -66,17 +82,49 @@
             </div>
         </div>
 
+        {{-- Discipline & sanctions --}}
+        @can('viewAny', App\Models\Sanction::class)
+            <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-semibold text-slate-900">Discipline &amp; sanctions</h3>
+                    @can('create', App\Models\Sanction::class)
+                        <a href="{{ route('sanctions.create', ['employe_id' => $employe->id]) }}" class="text-xs font-medium text-koanda-dark hover:text-koanda">+ Ajouter</a>
+                    @endcan
+                </div>
+                <div class="mt-3 divide-y divide-slate-50">
+                    @forelse ($employe->sanctions as $s)
+                        <div class="flex items-center justify-between py-3 text-sm">
+                            <div>
+                                <p class="font-medium text-slate-800">{{ $s->type->libelle() }}</p>
+                                <p class="text-xs text-slate-400">{{ $s->date_sanction->format('d/m/Y') }} · {{ \Illuminate\Support\Str::limit($s->motif, 40) }}</p>
+                            </div>
+                            <span class="inline-flex rounded-full bg-{{ $s->type->couleur() }}-50 px-2.5 py-0.5 text-xs font-medium text-{{ $s->type->couleur() }}-700">{{ $s->type->libelle() }}</span>
+                        </div>
+                    @empty
+                        <p class="py-3 text-sm text-slate-400">Aucune sanction.</p>
+                    @endforelse
+                </div>
+            </div>
+        @endcan
+
         {{-- Documents --}}
         <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h3 class="text-sm font-semibold text-slate-900">Documents RH</h3>
+            <div class="flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-slate-900">Documents RH</h3>
+                @can('create', App\Models\DocumentRh::class)
+                    <a href="{{ route('documents.create', ['employe_id' => $employe->id]) }}" class="text-xs font-medium text-koanda-dark hover:text-koanda">+ Téléverser</a>
+                @endcan
+            </div>
             <div class="mt-3 divide-y divide-slate-50">
                 @forelse ($employe->documents as $doc)
                     <div class="flex items-center justify-between py-3 text-sm">
                         <div>
                             <p class="font-medium text-slate-800">{{ $doc->titre }}</p>
-                            <p class="text-xs text-slate-400">{{ $doc->type_document }} · {{ $doc->confidentialite->libelle() }}</p>
+                            <p class="text-xs text-slate-400">{{ ucfirst(str_replace('_',' ',$doc->type_document)) }} · {{ $doc->confidentialite->libelle() }}@if($doc->date_expiration) · expire le {{ $doc->date_expiration->format('d/m/Y') }}@endif</p>
                         </div>
-                        @if($doc->date_expiration)<span class="text-xs text-slate-400">Expire le {{ $doc->date_expiration->format('d/m/Y') }}</span>@endif
+                        @can('view', $doc)
+                            <a href="{{ route('documents.download', $doc) }}" class="text-xs font-medium text-koanda-dark hover:text-koanda">Télécharger</a>
+                        @endcan
                     </div>
                 @empty
                     <p class="py-3 text-sm text-slate-400">Aucun document.</p>

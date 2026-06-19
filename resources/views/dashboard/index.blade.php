@@ -65,14 +65,34 @@
         <div class="mt-3 overflow-hidden rounded-lg border border-slate-100">
             <table class="min-w-full divide-y divide-slate-100 text-sm">
                 <thead class="bg-slate-50 text-left text-xs uppercase tracking-wider text-slate-400">
-                    <tr><th class="px-4 py-2">Filiale</th><th class="px-4 py-2">Code</th><th class="px-4 py-2 text-right">Effectif</th></tr>
+                    <tr>
+                        <th class="px-4 py-2">Filiale</th>
+                        <th class="px-4 py-2">Code</th>
+                        <th class="px-4 py-2 text-right">Effectif</th>
+                        @if ($tauxPresence->isNotEmpty())
+                            <th class="px-4 py-2 text-right" title="Absentéisme ce mois">Absent.</th>
+                            <th class="px-4 py-2 text-right" title="Retards ce mois">Retards</th>
+                        @endif
+                        @if ($masseSalariale->isNotEmpty())
+                            <th class="px-4 py-2 text-right" title="Masse salariale nette du mois">Masse sal.</th>
+                        @endif
+                    </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-50">
                     @foreach ($effectifParFiliale as $ligne)
+                        @php $t = $tauxPresence[$ligne['id']] ?? null; @endphp
                         <tr class="hover:bg-slate-50">
                             <td class="px-4 py-2 font-medium text-slate-800">{{ $ligne['filiale'] }}</td>
                             <td class="px-4 py-2 text-slate-400">{{ $ligne['code'] }}</td>
                             <td class="px-4 py-2 text-right font-semibold text-slate-900">{{ $ligne['effectif'] }}</td>
+                            @if ($tauxPresence->isNotEmpty())
+                                <td class="px-4 py-2 text-right {{ $t && $t['taux_absenteisme'] > 10 ? 'text-rose-600 font-semibold' : 'text-slate-500' }}">{{ $t ? $t['taux_absenteisme'].' %' : '—' }}</td>
+                                <td class="px-4 py-2 text-right {{ $t && $t['taux_retard'] > 10 ? 'text-amber-600 font-semibold' : 'text-slate-500' }}">{{ $t ? $t['taux_retard'].' %' : '—' }}</td>
+                            @endif
+                            @if ($masseSalariale->isNotEmpty())
+                                @php $ms = $masseSalariale[$ligne['id']] ?? null; @endphp
+                                <td class="px-4 py-2 text-right text-slate-700">{{ $ms ? number_format($ms->masse, 0, ',', ' ') : '—' }}</td>
+                            @endif
                         </tr>
                     @endforeach
                 </tbody>
@@ -80,6 +100,49 @@
         </div>
     </div>
 </div>
+
+{{-- Contrats à renouveler --}}
+@can('contrat.view')
+<div class="mt-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-sm font-semibold text-slate-900">Contrats à renouveler</h2>
+            <p class="text-xs text-slate-400">Échéance dans les 30 prochains jours</p>
+        </div>
+        <a href="{{ route('contrats.index', ['statut' => 'actif']) }}" class="text-xs font-medium text-koanda-dark hover:text-koanda">Tous les contrats →</a>
+    </div>
+    <div class="mt-3 overflow-hidden rounded-lg border border-slate-100">
+        <table class="min-w-full divide-y divide-slate-100 text-sm">
+            <thead class="bg-slate-50 text-left text-xs uppercase tracking-wider text-slate-400">
+                <tr>
+                    <th class="px-4 py-2">Employé</th>
+                    <th class="px-4 py-2">Filiale</th>
+                    <th class="px-4 py-2">Type</th>
+                    <th class="px-4 py-2">Échéance</th>
+                    <th class="px-4 py-2 text-right">Reste</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-50">
+                @forelse ($aRenouveler as $contrat)
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-4 py-2 font-medium text-slate-800">
+                            <a href="{{ route('contrats.show', $contrat) }}" class="hover:text-koanda-dark">{{ $contrat->employe->nom_complet }}</a>
+                        </td>
+                        <td class="px-4 py-2 text-slate-500">{{ $contrat->filiale->code ?? $contrat->filiale->nom }}</td>
+                        <td class="px-4 py-2 text-slate-500">{{ $contrat->type_contrat->libelle() }}</td>
+                        <td class="px-4 py-2 text-slate-500">{{ $contrat->date_fin->format('d/m/Y') }}</td>
+                        <td class="px-4 py-2 text-right">
+                            <span class="inline-flex rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700">{{ $contrat->jours_avant_echeance }} j</span>
+                        </td>
+                    </tr>
+                @empty
+                    <tr><td colspan="5" class="px-4 py-6 text-center text-slate-400">Aucun contrat à renouveler dans les 30 jours.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+@endcan
 
 <script>
     const dataFiliales = @json($effectifParFiliale);

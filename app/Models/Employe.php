@@ -6,6 +6,7 @@ use App\Models\Concerns\BelongsToFiliale;
 use App\Models\Enums\StatutEmploye;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
@@ -63,6 +64,20 @@ class Employe extends Model
     public function soldesConges(): HasMany { return $this->hasMany(SoldeConge::class); }
     public function evaluations(): HasMany { return $this->hasMany(EvaluationPerformance::class); }
     public function sanctions(): HasMany { return $this->hasMany(Sanction::class); }
+    public function missions(): HasMany { return $this->hasMany(Mission::class); }
+    public function bulletins(): HasMany { return $this->hasMany(BulletinPaie::class); }
+
+    public function competences(): BelongsToMany
+    {
+        return $this->belongsToMany(Competence::class, 'competence_employe')
+            ->withPivot('niveau')->withTimestamps();
+    }
+
+    public function formations(): BelongsToMany
+    {
+        return $this->belongsToMany(Formation::class, 'formation_employe')
+            ->withPivot('present', 'resultat')->withTimestamps();
+    }
 
     public function contratActif(): ?Contrat
     {

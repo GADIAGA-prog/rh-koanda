@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             FilialeSeeder::class,
             DemoSeeder::class,
+            RubriquePaieSeeder::class,
         ]);
     }
 }

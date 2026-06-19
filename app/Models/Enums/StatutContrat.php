@@ -11,6 +11,21 @@ enum StatutContrat: string
 
     public function libelle(): string
     {
-        return ucfirst($this->value);
+        return match ($this) {
+            self::ACTIF => 'Actif',
+            self::EXPIRE => 'Expiré',
+            self::RESILIE => 'Résilié',
+            self::SUSPENDU => 'Suspendu',
+        };
+    }
+
+    public function couleur(): string
+    {
+        return match ($this) {
+            self::ACTIF => 'emerald',
+            self::EXPIRE => 'amber',
+            self::RESILIE => 'rose',
+            self::SUSPENDU => 'slate',
+        };
     }
 }

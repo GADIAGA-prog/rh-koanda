@@ -46,7 +46,7 @@ class EmployeController extends Controller
 
     public function show(Employe $employe)
     {
-        $employe->load(['filiale', 'departement', 'poste', 'manager', 'contrats', 'conges', 'documents']);
+        $employe->load(['filiale', 'departement', 'poste', 'manager', 'contrats', 'conges', 'documents', 'sanctions.auteur']);
 
         return view('employes.show', compact('employe'));
     }

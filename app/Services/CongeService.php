@@ -29,6 +29,8 @@ class CongeService
         $fin = Carbon::parse($donnees['date_fin']);
         $donnees['nombre_jours'] = $this->calculerJoursOuvres($debut, $fin);
         $donnees['statut_validation'] = StatutConge::EN_ATTENTE->value;
+        // filiale_id dérivée de l'employé (utilisateurs Groupe : filiale_id null).
+        $donnees['filiale_id'] = \App\Models\Employe::findOrFail($donnees['employe_id'])->filiale_id;
 
         return Conge::create($donnees);
     }

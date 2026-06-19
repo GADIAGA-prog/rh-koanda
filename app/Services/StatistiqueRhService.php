@@ -86,6 +86,7 @@ class StatistiqueRhService
             ->when($this->filialesAutorisees, fn ($q, $v) => $q->whereIn('id', $v))
             ->orderBy('nom')->get()
             ->map(fn ($f) => [
+                'id' => $f->id,
                 'filiale' => $f->nom,
                 'code' => $f->code,
                 'effectif' => $effectifs[$f->id] ?? 0,

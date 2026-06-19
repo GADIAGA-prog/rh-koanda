@@ -16,4 +16,13 @@ enum Confidentialite: string
             self::DIRECTION => 'Réservé Direction',
         };
     }
+
+    public function couleur(): string
+    {
+        return match ($this) {
+            self::PUBLIC => 'emerald',
+            self::RH => 'amber',
+            self::DIRECTION => 'rose',
+        };
+    }
 }
